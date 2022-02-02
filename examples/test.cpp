@@ -26,29 +26,13 @@ int main() {
     mcp.portMode(MCP23017Port::A, 0); //Port A as output
     mcp.portMode(MCP23017Port::B, 0); //Port B as output
 
-    int mode = 1;
-
     while(1) {
-        if (mode) {
-            for (int i = 0; i < 16; i++) {
-                mcp.write(1 << i);
-                mssleep(20);
-            }
+        for (int i = 0; i < 16; i++) {
+            mcp.write(1 << i);
+            mssleep(20);
         }
-        else {
-            for (int i = 0; i < 8; i++) {
-                mcp.writePort(MCP23017Port::A, 1 << i);
-                mcp.writePort(MCP23017Port::B, 1 << i);
-                mssleep(20);
-            }
-        }
-        if (mode) {
-            mcp.write(0x0000);
-        }
-        else {
-            mcp.writePort(MCP23017Port::A, 0x00);
-            mcp.writePort(MCP23017Port::B, 0x00);
-        }
+
+        mcp.write(0x0000);
     }
 
     return 1;

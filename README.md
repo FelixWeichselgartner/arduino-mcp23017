@@ -1,5 +1,5 @@
-# MCP23017
-[![Build Status](https://travis-ci.org/blemasle/arduino-mcp23017.svg?branch=master)](https://travis-ci.org/blemasle/arduino-mcp23017)
+# MCP23017 for Raspberry Pi
+
 [![License](https://img.shields.io/badge/license-MIT%20License-blue.svg)](http://doge.mit-license.org)
 
 This library provides full control over the Microchip's [MCP23017](https://www.microchip.com/wwwproducts/en/MCP23017), including interrupt support.
@@ -11,18 +11,16 @@ This library provides full control over the Microchip's [MCP23017](https://www.m
  * Full interrupt support
 
 ## Usage
-Unlike most Arduino library, no default instance is created when the library is included. It's up to you to create one using the appropriate I2C address based on  MCP23017 `A0`, `A1` and `A2` pins wirings.
+You can create multiple MCP23017 objects based on  MCP23017 `A0`, `A1` and `A2` pins wirings.
 Available addresses go from `0x20` to `0x27`, allowing up to 8 MCP23017 on the same I2C bus.
 
 ```cpp
-#include <Arduino.h>
-#include <MCP23017.h>
+#include "MCP23017.hpp"
 
-MCP23017 mcp = MCP23017(0x24);
+MCP23017 mcp = MCP23017(bus, 0x24);
 ```
 
-Additionaly, you can specify the `Wire` instance to use as a second argument. For instance `MCP23017(0x24, Wire1)`.  
-See included examples for further usage.
+You have to create a I²C-interface with smbus. See [here](./examples/test.cpp) for an example.
 
 ## Remarks
 Major renames have been performed in v2.0.0 to improve compatibility with a variety of platforms. Existing code *will* break when you update from version v1.x.
