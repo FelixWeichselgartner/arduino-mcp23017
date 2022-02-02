@@ -1,5 +1,2 @@
-# Build results
-[Bb]in/
-
-#Visual Studio code
-.vscode/
+examples/MCP23017.*
+examples/test.out

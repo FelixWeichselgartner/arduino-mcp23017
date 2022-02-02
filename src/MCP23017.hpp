@@ -1,7 +1,47 @@
 #pragma once
 
-#include <Arduino.h>
-#include <Wire.h>
+// https://www.kernel.org/doc/Documentation/i2c/dev-interface
+
+extern "C" {
+    #include <linux/i2c.h>
+    #include <linux/i2c-dev.h>
+    #include <i2c/smbus.h>
+    #include <sys/ioctl.h>
+    #include <stdint.h>
+    #include <unistd.h>
+    #include <fcntl.h>
+}
+
+// https://github.com/esp8266/Arduino/blob/master/cores/esp8266/Arduino.h
+#define HIGH 0x1
+#define LOW  0x0
+
+//GPIO FUNCTIONS
+#define INPUT             0x00
+#define INPUT_PULLUP      0x02
+#define INPUT_PULLDOWN_16 0x04 // PULLDOWN only possible for pin16
+#define OUTPUT            0x01
+#define OUTPUT_OPEN_DRAIN 0x03
+#define WAKEUP_PULLUP     0x05
+#define WAKEUP_PULLDOWN   0x07
+
+//Interrupt Modes
+#define RISING    0x01
+#define FALLING   0x02
+#define CHANGE    0x03
+#define ONLOW     0x04
+#define ONHIGH    0x05
+#define ONLOW_WE  0x0C
+#define ONHIGH_WE 0x0D
+
+#define lowByte(w) ((uint8_t) ((w) & 0xff))
+#define highByte(w) ((uint8_t) ((w) >> 8))
+
+#define bitRead(value, bit) (((value) >> (bit)) & 0x01)
+#define bitSet(value, bit) ((value) |= (1UL << (bit)))
+#define bitClear(value, bit) ((value) &= ~(1UL << (bit)))
+#define bitWrite(value, bit, bitvalue) (bitvalue ? bitSet(value, bit) : bitClear(value, bit))
+
 
 #define _MCP23017_INTERRUPT_SUPPORT_ ///< Enables support for MCP23017 interrupts.
 
@@ -58,17 +98,20 @@ inline MCP23017Register operator+(MCP23017Register a, MCP23017Port b) {
 class MCP23017
 {
 private:
-	TwoWire* _bus;
+	int _bus;
 	uint8_t _deviceAddr;
+	static uint8_t activeDev;
 public:
 	/**
 	 * Instantiates a new instance to interact with a MCP23017 at the specified address.
 	 */
-	MCP23017(uint8_t address, TwoWire& bus = Wire);
+	MCP23017(int &bus, uint8_t address);
 	~MCP23017();
 #ifdef _DEBUG
 	void debug();
 #endif
+	void selectDev();
+
 	/**
 	 * Initializes the chip with the default configuration.
 	 * Enables Byte mode (IOCON.BANK = 0 and IOCON.SEQOP = 1).
@@ -173,7 +216,7 @@ public:
 	 * you have to supply a portA register address to reg. Otherwise, values
 	 * will be reversed due to the way the MCP23017 works in Byte mode.
 	 */
-	void writeRegister(MCP23017Register reg, uint8_t portA, uint8_t portB);
+	void writeRegisterWord(MCP23017Register reg, uint16_t port);
 	/**
 	 * Reads a single register value.
 	 */
