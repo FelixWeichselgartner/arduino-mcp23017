@@ -21,14 +21,3 @@ MCP23017 mcp = MCP23017(bus, 0x24);
 ```
 
 You have to create a I²C-interface with smbus. See [here](./examples/test.cpp) for an example.
-
-## Remarks
-Major renames have been performed in v2.0.0 to improve compatibility with a variety of platforms. Existing code *will* break when you update from version v1.x.
-
-| Name in v1.x          | Name in v2.x              |
-|-----------------------|---------------------------|
-| `MCP23017_PORT`       | `MCP23017Port`            |
-| `MCP23017_REGISTER`   | `MCP23017Register`        |
-| `MCP23017_INTMODE`    | `MCP23017InterruptMode`   |
-
-In addition to this, every member of the `MCP23017Register` enum were renamed to avoid possible conflicts with macro definitions. `GPIOA` was renamed to `GPIO_A`, `INTCAPA` to `INTCAP_A` and so on...
